@@ -1,0 +1,63 @@
+version: '3.8'
+
+networks:
+  redisNet:
+    driver:
+      bridge
+
+services:
+  redis:
+    container_name: redis
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      # - REDIS_PASSWORD=?
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - '6379:6379'
+    networks:
+      - redisNet
+
+  redis-slave:
+    container_name: redis-slave
+    image: 'bitnami/redis:latest'
+    environment:
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=redis
+      # - REDIS_MASTER_PASSWORD=?
+      # - REDIS_PASSWORD=?
+      - ALLOW_EMPTY_PASSWORD=yes
+    depends_on:
+      - redis
+    networks:
+      - redisNet
+
+  redis-sentinel:
+    container_name: redis-sentinel
+    image: 'bitnami/redis-sentinel:latest'
+    environment:
+      # - REDIS_MASTER_PASSWORD=?
+      - REDIS_MASTER_HOST=redis
+    depends_on:
+      - redis
+      - redis-slave
+    ports:
+      - '26379:26379'
+    networks:
+      - redisNet
+  
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: ghcr.io/joeferner/redis-commander:latest
+    environment:
+      # - REDIS_HOST=local:redis:6379
+      # - SENTINELS=redis-sentinel:26379:mymaster
+      - SENTINEL_NAME=mymaster
+      - SENTINEL_HOST=redis-sentinel
+      - SENTINEL_PORT=26379
+    ports:
+      - '8081:8081'
+    networks:
+      - redisNet
+
