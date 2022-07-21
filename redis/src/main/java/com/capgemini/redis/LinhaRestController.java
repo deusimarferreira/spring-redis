@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capgemini.redis.entity.Linha;
@@ -17,21 +18,22 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/linhas")
 public class LinhaRestController {
 
     private final LinhaService service;
 
-    @PostMapping("/linha")
-    public ResponseEntity<String> salvar(@RequestBody RequestData body) {
+    @PostMapping
+    public ResponseEntity<Linha> salvar(@RequestBody RequestData body) {
         return ResponseEntity.ok(service.save(body));
     }
 
-    @GetMapping("/linha/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Linha> get(@PathVariable String id) {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @PutMapping("/linha/{id}/{status}")
+    @PutMapping("/{id}/{status}")
     public ResponseEntity<String> updateStatus(
             @PathVariable String id,
             @PathVariable String status
@@ -40,14 +42,30 @@ public class LinhaRestController {
         return ResponseEntity.ok("OK");
     }
 
-    @GetMapping("/linha/{status}/all")
+    @GetMapping("/{status}/all")
     public ResponseEntity<List<Linha>> getAllByStatus(@PathVariable String status) {
         return ResponseEntity.ok(service.getAllByStatus(status));
     }
 
-    @GetMapping("/linha/{status}/count")
+    @GetMapping("/{status}/count")
     public ResponseEntity<Long> countByStatus(@PathVariable String status) {
         return ResponseEntity.ok(service.countByStatus(status));
+    }
+
+    @GetMapping("/{documentId}/all/{status}")
+    public ResponseEntity<List<Linha>> buscarLinhasDeArquivoComStatus(
+            @PathVariable String documentId,
+            @PathVariable String status
+    ) {
+        return ResponseEntity.ok(service.findByDocumentIdAndStatus(documentId, status));
+    }
+
+    @GetMapping("/{documentId}/count/{status}")
+    public ResponseEntity<Long> buscarQuantidadeLinhasDeArquivoComStatus(
+            @PathVariable String documentId,
+            @PathVariable String status
+    ) {
+        return ResponseEntity.ok(service.countByDocumentAndStatus(documentId, status));
     }
     
 }

@@ -11,5 +11,6 @@ import com.capgemini.redis.entity.Linha;
 public interface LinhaRepository extends CrudRepository<Linha, String> {
 
     public List<Linha> findByStatus(String status);
+    public List<Linha> findByDocumentIdAndStatus(String documentId, String status);
     
 }

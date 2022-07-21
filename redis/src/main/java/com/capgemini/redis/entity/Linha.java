@@ -20,5 +20,7 @@ public class Linha {
     private String status;
     private Data data;
     private Integer number;
+    @Indexed
+    private String documentId;
 
 }

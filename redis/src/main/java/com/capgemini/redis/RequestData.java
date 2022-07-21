@@ -14,5 +14,5 @@ import lombok.Setter;
 public class RequestData {
     private String status;
     private Data data;
-    private Integer number;
+    private String documentId;
 }

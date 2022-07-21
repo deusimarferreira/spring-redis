@@ -37,12 +37,16 @@ services:
     image: 'bitnami/redis-sentinel:latest'
     environment:
       # - REDIS_MASTER_PASSWORD=?
-      - REDIS_MASTER_HOST=redis
+      - REDIS_MASTER_HOST=localhost
     depends_on:
       - redis
       - redis-slave
     ports:
       - '26379:26379'
+    extra_hosts:
+      - "localhost:172.23.0.2"
+    # external_links:
+    #   - redis
     networks:
       - redisNet
   
